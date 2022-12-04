@@ -1,0 +1,70 @@
+@startuml chat
+ hide circle
+ skinparam linetype ortho
+
+ entity "ユーザー (users)" as users {
+    * <<PK>> id : string : ID
+    --
+    * name : string : 名称
+    * email : string : メールアドレス
+     display_name : string : 表示名
+     avatar_url : string : アバターURL
+    * joined_at : date : 参画日時
+ }
+
+ entity "ワークスペース (workspaces)" as workspaces {
+     * <<PK>> id : int : ID
+     --
+     * name : string : 名称
+     * created_at : date : 作成日時
+ }
+
+entity "チャンネル (channels)" as channels {
+     * <<PK>> id : int : ID
+     --
+     * <<FK>> workspace_id : string : ワークスペースID
+     * name : string : 名称
+     * created_at : date : 作成日時
+ }
+
+entity "スレッド (threads)" as threads {
+     * <<PK>> id : int : ID
+     --
+     * <<FK>> channel_id : string : チャンネルID
+     ※ created_at : date : 作成日時
+ }
+
+entity "メッセージ (messages)" as messages {
+     * <<PK>> id : int : ID
+     --
+     * <<FK>> thread_id : int : スレッドID
+     * <<FK>> posted_by : int : 投稿者ID
+     * content : string : 投稿内容
+     * posted_at : date : 送信日時
+     * last_edited_at : date : 最終更新日時
+ }
+
+entity "ユーザーが属しているワークスペース (users_workspaces)" as users_workspaces {
+     * <<PK>> id : int : ID
+    --
+     * <<FK>> workspace_id : string : ワークスペースID
+     * <<FK>> user_id : string : ユーザーID
+ }
+
+ entity "ユーザーが属しているチャンネル (users_channels)" as users_channels {
+     * <<PK>> id : int : ID
+    --
+     * <<FK>> channel_id : string : チャンネルID
+     * <<FK>> user_id : string : ユーザーID
+ }
+
+workspaces ||..o{ channels
+channels ||..o{ threads
+threads ||..o{ messages
+workspaces ||..|{ users_workspaces
+users ||..o{ users_workspaces
+channels ||..|{ users_channels
+users ||..o{ users_channels
+ 
+
+ @enduml

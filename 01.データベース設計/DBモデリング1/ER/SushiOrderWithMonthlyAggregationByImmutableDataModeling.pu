@@ -15,6 +15,7 @@
  entity "編集履歴 (modification_histories)" as modification_histories {
      * <<PK>> id : int : ID
      --
+     * <<FK>> modified_by : int : 管理者ID
      * modified_at : date : 編集時刻
  }
 
