@@ -1,0 +1,74 @@
+@startuml sushi
+ hide circle
+ skinparam linetype ortho
+ 
+ entity "メニュー (menus)" as menus {
+     * <<PK>> id : int : ID
+     --
+     * <<FK>> menu_type_id : int : メニュー種別ID
+     <<FK>> menu_label_id : int : メニューラベルID
+     * name : string : メニュー名
+     * price : int : 値段
+     * can_be_taken_away : boolean : 持ち帰り可否
+ }
+
+ entity "メニュー種別 (menu_types)" as menu_types {
+     * <<PK>> id : int : ID
+     --
+     * <<u>> name : string : 名称
+ }
+
+ entity "メニューラベル (menu_labels)" as menu_labels {
+     * <<PK>> id : int : メニューラベルID
+     --
+     * <<u>> label : string : メニューラベル
+ }
+
+ entity "顧客 (customers)" as customers {
+     * <<PK>> id : int : ID
+     --
+     * name : string : 名前
+     * phone_number : int : 電話番号
+ }
+
+ entity "シャリサイズ種別 (rise_size_types)" as rise_size_types {
+     * <<PK>> id : int : ID
+     --
+     * name : string : 名称
+ }
+
+entity "注文 (orders)" as orders {
+     * <<PK>> id : int : ID
+     --
+     * <<FK>> customer_id : int : 顧客ID
+     * total_price: int : 合計金額     
+     * is_paid : boolean : 支払いフラグ
+     * memo : string : 顧客記入メモ欄
+     * ordered_at : date : 注文日時
+}
+
+ entity "注文詳細 (order_details)" as order_details {
+     * <<FK>> order_id : int : 注文ID
+     * <<FK>> menu_id : int : メニューID
+     --
+     * quantity: int : 注文個数
+     * has_mustard: boolean : サビ要否
+     * rise_size_type_id: int : シャリサイズ種別
+ }
+
+ entity "メニュー別月間売上 (monthly_sales_per_menu)" as monthly_sales_per_menu {
+     * <<FK>> menu_id : int : 注文ID
+     * <<u>> month : int : 月
+     --
+     * quantity: int : 個数
+ }
+
+customers ||..o{ orders
+orders ||..|{ order_details
+rise_size_types ||..o| order_details
+menus ||..o{ order_details
+menu_types ||..o{ menus
+menu_labels |o..o{ menus
+menus ||..o{ monthly_sales_per_menu
+
+ @enduml
