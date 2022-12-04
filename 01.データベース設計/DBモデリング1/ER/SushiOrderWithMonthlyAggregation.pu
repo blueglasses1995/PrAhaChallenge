@@ -2,6 +2,20 @@
  hide circle
  skinparam linetype ortho
  
+ entity "ネタ (items)" as items {
+     * <<PK>> id : int : ID
+     --
+     * name : int : 名称
+ }
+
+ entity "メニューとアイテムの中間テーブル (menus_items)" as menus_items {
+     * <<PK>> id : int : ID
+     --
+     * <<FK>> menu_id : int : メニューID
+     * <<FK>> item_id : int : アイテムID
+     * quantity : int : メニュー内のアイテム個数
+ }
+
  entity "メニュー (menus)" as menus {
      * <<PK>> id : int : ID
      --
@@ -40,11 +54,18 @@
 entity "注文 (orders)" as orders {
      * <<PK>> id : int : ID
      --
-     * <<FK>> customer_id : int : 顧客ID
-     * total_price: int : 合計金額     
-     * is_paid : boolean : 支払い済であるか否か
+     <<FK>> payment_id : int : 会計ID
+     * is_eat_in : boolean : 店内か持ち帰りか否か
      * memo : string : 顧客記入メモ欄
      * ordered_at : date : 注文日時
+}
+
+entity "会計 (payments)" as payments {
+     * <<PK>> id : int : ID
+     --
+     * <<FK>> customer_id : int : 顧客ID
+     * total_price: int : 合計金額
+     * paid_at : date : 会計日時
 }
 
  entity "注文詳細 (order_details)" as order_details {
@@ -56,19 +77,25 @@ entity "注文 (orders)" as orders {
      * rise_size_type_id: int : シャリサイズ種別
  }
 
- entity "メニュー別月間売上 (monthly_sales_per_menu)" as monthly_sales_per_menu {
-     * <<FK>> menu_id : int : 注文ID
-     * <<u>> month : int : 月
+ entity "アイテム別月間売上 (monthly_sales_per_item)" as monthly_sales_per_item {
+     * <<FK>> item_id : int : アイテムID
+     * month : int : 月
+     * is_eat_in : boolean : 店内か持ち帰りか否か
+     * includes_set_menu : boolean : セットメニュー内アイテム個数を集計対象とするか否か
      --
      * quantity: int : 個数
+     * price : int : 金額
  }
 
-customers ||..o{ orders
+customers ||..o{ payments
+payments |o..|{ orders
 orders ||..|{ order_details
 rise_size_types ||..o| order_details
 menus ||..o{ order_details
 menu_types ||..o{ menus
 menu_labels |o..o{ menus
-menus ||..o{ monthly_sales_per_menu
+menus ||..o{ menus_items
+items ||..o{ menus_items
+items ||..o{ monthly_sales_per_item
 
  @enduml
