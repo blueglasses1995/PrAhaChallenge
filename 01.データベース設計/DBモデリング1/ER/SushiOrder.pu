@@ -28,10 +28,10 @@
      * <<PK>> id : int : ID
      --
      * name : string : 名前
-     * phone_number : int : 電話番号
+     * phone_number : string : 電話番号
  }
 
- entity "シャリサイズ種別 (rise_size_types)" as rise_size_types {
+ entity "シャリサイズ種別 (rice_size_types)" as rice_size_types {
      * <<PK>> id : int : ID
      --
      * name : string : 名称
@@ -53,7 +53,7 @@ entity "注文 (orders)" as orders {
      --
      * quantity: int : 注文個数
      * has_mustard: boolean : サビ要否
-     * rise_size_type_id: int : シャリサイズ種別
+     * rice_size_type_id: int : シャリサイズ種別
  }
 
  entity "メニュー別月間売上 (monthly_sales_per_menu)" as monthly_sales_per_menu {
@@ -65,7 +65,7 @@ entity "注文 (orders)" as orders {
 
 customers ||..o{ orders
 orders ||..|{ order_details
-rise_size_types ||..o| order_details
+rice_size_types ||..o| order_details
 menus ||..o{ order_details
 menu_types ||..o{ menus
 menu_labels |o..o{ menus

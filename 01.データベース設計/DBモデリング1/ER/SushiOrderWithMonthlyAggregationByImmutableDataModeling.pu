@@ -69,7 +69,7 @@
      * <<FK>> modification_history_id : int : 編集履歴ID
      * <<FK>> menu_id : int : ID
      * <<FK>> menu_type_id : int : メニュー種別ID
-     <<FK>> menu_label_id : int : メニューラベルID
+     * <<FK>> menu_label_id : int : メニューラベルID
      * <<FK>> name : string : メニュー名
      * <<FK>> price : int : メニュー価格
      * <<FK>> can_be_taken_away : boolean : 持ち帰り可否
@@ -79,7 +79,7 @@
      * <<PK>> id : int : ID
      --
      * <<FK>> menu_type_id : int : メニュー種別ID
-     <<FK>> menu_label_id : int : メニューラベルID
+     * <<FK>> menu_label_id : int : メニューラベルID
      * name : string : メニュー名
      * price : int : 値段
      * can_be_taken_away : boolean : 持ち帰り可否
@@ -102,27 +102,34 @@
      --
      * <<FK>> customer_id : int : 顧客ID
      * <<FK>> name : string : 名前
-     * <<FK>> phone_number : int : 電話番号
+     * <<FK>> phone_number : string : 電話番号
  }
 
  entity "顧客 (customers)" as customers {
      * <<PK>> id : int : ID
      --
      * name : string : 名前
-     * phone_number : int : 電話番号
+     * phone_number : string : 電話番号
  }
 
- entity "シャリサイズ種別 (rise_size_types)" as rise_size_types {
+ entity "シャリサイズ種別 (rice_size_types)" as rice_size_types {
      * <<PK>> id : int : ID
      --
      * name : string : 名称
  }
 
+entity "来店 (visits)" as visits {
+     * <<PK>> id : int : ID
+    --
+     * <<FK>> customer_id : int : 顧客ID
+     * is_eat_in : boolean : 店内か持ち帰りか否か
+　　　* visited_at : date : 来店日時
+}
+
 entity "注文 (orders)" as orders {
      * <<PK>> id : int : ID
      --
-     <<FK>> payment_id : int : 会計ID
-     * is_eat_in : boolean : 店内か持ち帰りか否か
+     <<FK>> visit_id : int : 来店ID
      * memo : string : 顧客記入メモ欄
      * ordered_at : date : 注文日時
 }
@@ -130,7 +137,7 @@ entity "注文 (orders)" as orders {
 entity "会計 (payments)" as payments {
      * <<PK>> id : int : ID
      --
-     * <<FK>> customer_id : int : 顧客ID
+     * <<FK>> visit_id : int : 来店ID
      * total_price: int : 合計金額
      * paid_at : date : 会計日時
 }
@@ -141,7 +148,7 @@ entity "会計 (payments)" as payments {
      --
      * quantity: int : 注文個数
      * has_mustard: boolean : サビ要否
-     * rise_size_type_id: int : シャリサイズ種別
+     * rice_size_type_id: int : シャリサイズ種別
  }
 
  entity "アイテム別月間売上 (monthly_sales_per_item)" as monthly_sales_per_item {
@@ -154,10 +161,11 @@ entity "会計 (payments)" as payments {
      * price : int : 金額
  }
 
-customers ||..o{ payments
-payments |o..|{ orders
+customers ||..o{ visits
+visits ||..o| payments
+visits ||..|{ orders
 orders ||..|{ order_details
-rise_size_types ||..o| order_details
+rice_size_types ||..o| order_details
 menus ||..o{ order_details
 menu_types ||..o{ menus
 menu_labels |o..o{ menus
